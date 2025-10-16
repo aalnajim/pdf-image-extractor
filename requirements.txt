@@ -1,2 +1,15 @@
 PyMuPDF>=1.24
 Pillow>=10.0
+
+# Additional dependencies for PyInstaller on macOS
+altgraph==0.17.4
+macholib==1.16.3
+packaging==25.0
+setuptools==80.9.0
+
+# Development / build
+pyinstaller==6.16.0
+pyinstaller-hooks-contrib==2025.9
+
+# Optional UI niceties (only if you used them)
+tkinterdnd2==0.4.3

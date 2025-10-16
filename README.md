@@ -27,28 +27,35 @@ Works on **macOS, Windows, and Linux**.
 
 
 ## 🚀 Usage
-
+Terminal:
   ```bash
-  python pdf-image-extractor.py <PDF_PATH> <OUTPUT_DIR> [--export-pages] [--dpi 200] [--pages "1,3-5"] [--overwrite]
+  python3 pdf-image-extractor.py <PDF_PATH> <OUTPUT_DIR> [--export-pages] [--dpi 200] [--pages "1,3-5"] [--overwrite]
+```
+GUI Interface:
+```bash
+  python3 gui.py
 ```
 
 
 ## Examples
 ```bash
 # Extract all embedded images only
-python pdf-image-extractor.py input.pdf out
+python3 pdf-image-extractor.py input.pdf out
 
 # Extract images and export pages 2–5 and 10 as PNG at 300 DPI
-python pdf-image-extractor.py input.pdf out --pages 2-5,10 --export-pages --dpi 300
+python3 pdf-image-extractor.py input.pdf out --pages 2-5,10 --export-pages --dpi 300
 
 # Overwrite existing files in output directory
-python pdf-image-extractor.py input.pdf out --overwrite
+python3 pdf-image-extractor.py input.pdf out --overwrite
 ```
 
 
 ## 🪟 Windows (PowerShell)
 ```bash
 py .\pdf-image-extractor.py .\input.pdf .\out --export-pages --dpi 300
+```
+```bash
+py .\gui.py
 ```
 ---
 
