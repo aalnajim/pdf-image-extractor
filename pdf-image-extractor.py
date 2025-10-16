@@ -1,30 +1,29 @@
 #!/usr/bin/env python3
-# pip install PyMuPDF Pillow
+"""
+PDF Image Extractor
 
-# Author: Abdullah A. Alnajim
-# Email: alnajim@protonmail.com
-# GitHub: https://github.com/aalnajim/pdf-image-extractor 
-# License: MIT
-# Extract embedded images from a PDF (optionally export each page as PNG).
-# Usage: python main.py input.pdf output_folder --export-pages --pages 1,3-5 --dpi 300 --overwrite
-# Notes:
-# - Embedded images are saved in their original format (JPEG, PNG, etc).
-# - Page PNGs are rendered at specified DPI (default 200).
-# - Safe filenames and --overwrite option.
-# - Lightweight, fast, and cross-platform.
+Extract embedded images from a PDF (optionally render each page to PNG).
+
+Requirements:
+    pip install PyMuPDF Pillow
+"""
+
+__author__ = "Abdullah A. Alnajim"
+__email__ = "alnajim@protonmail.com"
+__version__ = "1.0.0"
 
 import argparse
-import os
 import re
 from pathlib import Path
-import fitz  # PyMuPDF
+from typing import Optional
 
 SAFE_CHARS = re.compile(r'[^A-Za-z0-9._@-]')
 
 def safe_name(s: str) -> str:
     return SAFE_CHARS.sub("-", s)
 
-def parse_page_range(pages: str, max_page: int) -> list[int]:
+
+def parse_page_range(pages: str | None, max_page: int) -> list[int]:
     """
     Parse '1,3-5,10' style ranges (1-based) -> zero-based list.
     """
@@ -45,14 +44,21 @@ def parse_page_range(pages: str, max_page: int) -> list[int]:
     # to zero-based
     return sorted([p - 1 for p in wanted])
 
+
 def extract_images_from_pdf(
     pdf_path: Path,
     output_folder: Path,
     export_pages: bool = False,
     dpi: int = 200,
-    pages: str | None = None,
+    pages: Optional[str] = None,
     overwrite: bool = False,
 ) -> None:
+    try:
+        import fitz  # PyMuPDF
+    except Exception as e:
+        raise SystemExit(
+            "PyMuPDF (fitz) not installed. Install with: pip install PyMuPDF"
+        ) from e
     output_folder.mkdir(parents=True, exist_ok=True)
     doc = fitz.open(pdf_path)
 
@@ -117,14 +123,32 @@ def extract_images_from_pdf(
     print(f"\n🎉 Done. Extracted {total_images} unique image object(s).")
     print(f"Output → {output_folder.resolve()}")
 
+
 def main():
-    ap = argparse.ArgumentParser(description="Extract embedded images from a PDF (optionally export each page as PNG).")
+    description = (
+        "Extract embedded images from a PDF in their original formats.\n"
+        "Optionally render each selected page as a PNG at a given DPI."
+    )
+    epilog = (
+        "Examples:\n"
+        "  python3 pdf-image-extractor.py input.pdf out\n"
+        "  python3 pdf-image-extractor.py input.pdf out --pages 2-5,10 --export-pages --dpi 300\n"
+        "  python3 pdf-image-extractor.py input.pdf out --overwrite\n"
+        f"\nAuthor: {__author__} <{__email__}>\n"
+    )
+    ap = argparse.ArgumentParser(
+        prog="pdf-image-extractor.py",
+        description=description,
+        epilog=epilog,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     ap.add_argument("pdf", type=Path, help="Path to PDF")
     ap.add_argument("out", type=Path, help="Output folder")
     ap.add_argument("--export-pages", action="store_true", help="Also export each page as PNG")
     ap.add_argument("--dpi", type=int, default=200, help="DPI for page PNG render (default: 200)")
     ap.add_argument("--pages", type=str, default=None, help="Pages to process, e.g. '1,3-5,10' (1-based)")
     ap.add_argument("--overwrite", action="store_true", help="Overwrite existing files")
+    ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     args = ap.parse_args()
 
     extract_images_from_pdf(
@@ -135,6 +159,7 @@ def main():
         pages=args.pages,
         overwrite=args.overwrite,
     )
+
 
 if __name__ == "__main__":
     main()
